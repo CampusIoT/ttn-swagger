@@ -1,0 +1,106 @@
+swagger: '2.0'
+info:
+  title: The Things Network Data Storage
+  description: Stores data and makes it available using a REST API
+  version: '2.0.0'
+  contact:
+    name: The Things Industries B.V.
+    url: https://www.thethingsindustries.com
+    email: info@thethingsindustries.com
+schemes:
+  - https
+securityDefinitions:
+  key:
+    type: apiKey
+    name: Authorization
+    in: header
+produces:
+  - application/json
+paths:
+  /api/v2/devices:
+    get:
+      summary: Query the devices for which data has been stored
+      description: |
+        The devices endpoint returns the list of devices for which data has been stored
+      tags:
+        - devices
+      security:
+        - key: []
+      responses:
+        200:
+          description: An array of device IDs
+          schema:
+            type: array
+            items:
+              type: string
+  /api/v2/query:
+    get:
+      summary: Query data
+      description: |
+        Query the data for all devices
+      tags:
+        - query
+      security:
+        - key: []
+      parameters:
+        - name: last
+          in: query
+          description: |
+            Duration on which we want to get the data (default 1h). Pass 30s for the last 30 seconds, 1h for the last hour, 2d for the last 48 hours, etc
+          required: false
+          type: string
+      responses:
+        200:
+          description: An array of data
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/data'
+  /api/v2/query/{device-id}:
+    get:
+      summary: Query data for a specific device
+      description: |
+        Query the data for a specific device
+      tags:
+        - query/{device-id}
+      security:
+        - key: []
+      parameters:
+        - name: device-id
+          in: path
+          description: |
+            The ID of the device for which we want to get the data
+          required: true
+          type: string
+        - name: last
+          in: query
+          description: |
+            Duration on which we want to get the data (default 1h). Pass 30s for the last 30 seconds, 1h for the last hour, 2d for the last 48 hours, etc
+          required: false
+          type: string
+      responses:
+        200:
+          description: An array of data
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/data'
+definitions:
+  data:
+    properties:
+      device_id:
+        type: string
+        description: Unique identifier representing the device ID
+      raw:
+        type: string
+        format: byte
+        description: Base64 encoded payload
+      time:
+        type: string
+        description: The timestamp of the data
+      field1:
+        type: string
+        description: Value1
+      field2:
+        type: string
+        description: Value2
